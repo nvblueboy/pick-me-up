@@ -1,0 +1,59 @@
+import requests,json
+import requests.auth
+
+class post():
+    def __init__(self,data):
+        self.selfPost = data["is_self"]
+        self.url = data["url"]
+        self.author=data["author"]
+        self.title=data["title"]
+        #Determine if the link is a photo.
+        urlSplit = self.url.split(".")
+        if len(urlSplit)==1:
+            self.photo = False
+        else:
+            if urlSplit[len(urlSplit)-1] in ["jpg","jpeg","png","gif"]:
+                self.photo = True
+                self.ext = urlSplit[len(urlSplit)-1]
+            else:
+                self.photo = False
+    def __str__(self):
+        return "\""+self.title+"\" by "+self.author+": "+self.url
+        
+def get_access_token(config):
+    client_auth = requests.auth.HTTPBasicAuth(config["reddit"]["id"],config["reddit"]["secret"])
+    client_headers = {"User-Agent": "Personal Assistant/0.1 by dbowman_pa"}
+    client_data = {"grant_type":"password",
+                   "username":config["reddit"]["user"],
+                   "password":config["reddit"]["pass"]}
+    r = requests.post("https://www.reddit.com/api/v1/access_token",
+                      data = client_data,
+                      headers = client_headers,
+                      auth = client_auth
+                      )
+    json_data = r.json()
+    return json_data["access_token"]
+
+def get_top_post(config, subreddit):
+    #Get an access token from reddit.
+    access_token = get_access_token(config)
+    #Set up the headers and access the server.
+    headers = {"Authorization":"bearer "+access_token, "User-Agent":"Personal Assistant/0.1 by dbowman_pa"}
+    r = requests.get("https://oauth.reddit.com/r/"+subreddit+"/hot",headers=headers)
+    #Parse the JSON data.
+    json_data = json.loads(r.text)
+    children = json_data["data"]["children"]
+    #Loop through the children.
+    for child in children:
+        data = child["data"]
+        p = post(data)
+        #Return the first child that is not a sticky post.
+        if not data["stickied"]:
+            return p
+
+if __name__ == "__main__":
+    import configparser
+    config = configparser.ConfigParser()
+    config.read("config.ini")
+    p = get_top_post(config,"wholesomememes")
+    print(p)
