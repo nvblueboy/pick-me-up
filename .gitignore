@@ -6,3 +6,4 @@ config.ini
 *.bmp
 *.tif
 *.jpeg
+*.csv
