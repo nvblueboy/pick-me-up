@@ -9,7 +9,7 @@ def getPeople(filename = "./people.csv"):
 	for line in lines:
 		splitLine = line.replace("\n","").split(",")
 		if len(splitLine) >= 3:
-			dictionary = {"type":splitLine[0].lower(), "email":splitLine[1], "name":splitLine[2]}
+			dictionary = {"type":splitLine[0].lower(), "text":splitLine[1].lower(), "meme":splitLine[2].lower(), "email":splitLine[3], "name":splitLine[4]}
 			people.append(dictionary)
 		else:
 			print("Could not understand " + line)
@@ -20,7 +20,7 @@ def writePeople(people, filename = "./people.csv"):
 	outputList = []
 
 	for person in people:
-		outputList.append(",".join([person["type"], person["email"], person["name"]]))
+		outputList.append(",".join([person["type"], person["text"], person["meme"], person["email"], person["name"]]))
 
 	outputStr = "\n".join(outputList)
 	fileHandle = open(filename, "w")

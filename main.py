@@ -4,7 +4,7 @@
 
 
 #Local imports
-import reddit, emailLib, people
+import reddit, emailLib, people, messages
 #Python imports
 import configparser, time, traceback
 
@@ -50,12 +50,19 @@ def sendMessages(config):
 	for person in peopleList:
 		customMessage = ""
 
+		if person["text"] == "y":
+			customMessage = messages.getMessage(person)
+			if person["meme"] == "y":
+				customMessage = customMessage + "\n\n"
 
-		if p["is_photo"]:
-			send_attachment(config,person["email"],customMessage + messageForAll, p["location"])
+		if person["meme"] == "y":
+			if p["is_photo"]:
+				send_attachment(config,person["email"],customMessage + messageForAll, p["location"])
+			else:
+				send_text(config,person["email"], customMessage + messageForAll + " @ " + p["url"])
 		else:
-			send_text(config,person["email"], customMessage + messageForAll + " @ " + p["url"])
-		print("Sent to "+person["name"])
+			send_text(config, person["email"], customMessage)
+		print("Sent to "+person["name"]+" at "+person["email"])
 
 if __name__ == "__main__":
 	main()
