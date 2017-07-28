@@ -1,8 +1,8 @@
-.pyc
+*.pyc
 config.ini
-.jpg
-.png
-.gif
-.bmp
-.tif
-.jpeg
+*.jpg
+*.png
+*.gif
+*.bmp
+*.tif
+*.jpeg
